@@ -16,12 +16,15 @@ app.use(cors({
 connectDB();
 
 app.use(express.json());
+const shipmentRoutes = require("./routes/shipmentRoutes");
 
 app.get('/', (req, res) => {
   res.send('Orderfolio Server is running!');
 });
 
+
 app.use('/api/auth', authRoutes);
+app.use("/api/shipments", shipmentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
