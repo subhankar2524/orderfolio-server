@@ -7,11 +7,30 @@ const authRoutes = require('./routes/auth');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+const defaultCorsOrigins = [
+  'http://localhost:3000',
+  'https://orderfolio-frontend.onrender.com',
+];
+
+const corsOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = corsOrigins.length > 0 ? corsOrigins : defaultCorsOrigins;
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  })
+);
 
 connectDB();
 
